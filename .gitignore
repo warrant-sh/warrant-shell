@@ -1,0 +1,13 @@
+target/
+RED_TEAM_*.md
+CROSS_REPO_FIXES.md
+R7_FIXES.md
+
+CODEX_INSTRUCTIONS.md
+CLAUDE_INSTRUCTIONS.md
+references/SECURITY_CONTEXT.md
+registry-link
+warrant-core-link
+e2e/env.sh
+e2e/logs/
+.DS_Store

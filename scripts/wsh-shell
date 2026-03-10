@@ -1,0 +1,36 @@
+#!/bin/sh
+# wsh-shell — drop-in shell replacement that routes all commands through wsh
+#
+# Usage:
+#   SHELL=/path/to/wsh-shell codex
+#   SHELL=/path/to/wsh-shell claude
+#
+# Every command the agent executes goes through wsh policy enforcement
+# and audit logging. The agent doesn't know the difference.
+#
+# Install:
+#   sudo cp scripts/wsh-shell /usr/local/bin/wsh-shell
+#   chmod +x /usr/local/bin/wsh-shell
+
+set -eu
+
+case "${1:-}" in
+  -c)
+    # Most agent frameworks invoke: sh -c "command string"
+    shift
+    exec wsh exec -- sh -c "$@"
+    ;;
+  -l)
+    # Login shell — some tools request this
+    shift
+    exec wsh exec -- sh "$@"
+    ;;
+  "")
+    # Interactive — shouldn't happen with agents but handle gracefully
+    exec wsh exec -- sh
+    ;;
+  *)
+    # Direct command: wsh-shell script.sh
+    exec wsh exec -- sh "$@"
+    ;;
+esac

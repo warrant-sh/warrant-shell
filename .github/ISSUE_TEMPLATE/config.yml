@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability
+    url: mailto:security@warrant.sh
+    about: "Please report security vulnerabilities via email, not public issues."
+  - name: Questions & Discussion
+    url: https://github.com/warrant-sh/warrant-shell/discussions
+    about: "Ask questions and share ideas in Discussions."

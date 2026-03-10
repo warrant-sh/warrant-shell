@@ -1,0 +1,78 @@
+name: Bug Report
+description: Something isn't working as expected
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill in as much detail as you can.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+      placeholder: "When I run `wsh exec -- cargo build`, it denies the command even though cargo.build is allowed in my policy."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce this?
+      placeholder: |
+        1. Create a policy with `cargo.build = true`
+        2. Run `wsh lock`
+        3. Run `wsh exec -- cargo build`
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: policy
+    attributes:
+      label: Policy file (if relevant)
+      description: Paste the relevant parts of your warrant TOML.
+      render: toml
+
+  - type: textarea
+    id: audit
+    attributes:
+      label: Audit log output (if relevant)
+      description: "Run `wsh audit --json | tail -5` and paste the output."
+      render: json
+
+  - type: input
+    id: version
+    attributes:
+      label: wsh version
+      description: "Output of `wsh --version`"
+      placeholder: "wsh 0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: "e.g. Ubuntu 24.04, macOS 15.2, Arch Linux"
+      placeholder: "Ubuntu 24.04"
+    validations:
+      required: true
+
+  - type: input
+    id: rust
+    attributes:
+      label: Rust version (if built from source)
+      description: "Output of `rustc --version`"
+      placeholder: "rustc 1.85.0"

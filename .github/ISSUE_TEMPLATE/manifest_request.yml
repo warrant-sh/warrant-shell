@@ -1,0 +1,44 @@
+name: Manifest Request
+description: Request a new tool manifest
+title: "[Manifest] "
+labels: ["manifest"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Want wsh to support a new CLI tool out of the box? Let us know.
+
+  - type: input
+    id: tool
+    attributes:
+      label: Tool name
+      description: The CLI tool you'd like a manifest for.
+      placeholder: "e.g. terraform, kubectl, aws"
+    validations:
+      required: true
+
+  - type: textarea
+    id: capabilities
+    attributes:
+      label: Key capabilities
+      description: What are the main actions this tool performs that should be controlled?
+      placeholder: |
+        - apply (creates/modifies infrastructure)
+        - destroy (tears down infrastructure)
+        - plan (read-only, safe)
+        - init (downloads providers)
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: How do you use this tool with AI agents?
+      description: Help us understand the use case.
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Would you be willing to contribute this?
+      options:
+        - label: I'd be interested in writing this manifest myself

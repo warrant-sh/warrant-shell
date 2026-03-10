@@ -1,0 +1,15 @@
+# E2E Docker build context
+# Include: source code, Cargo files, e2e build context
+# Exclude: build artifacts, red team files, IDE files
+
+target/
+RED_TEAM_*.md
+CROSS_REPO_FIXES.md
+R7_FIXES.md
+CODEX_INSTRUCTIONS.md
+CLAUDE_INSTRUCTIONS.md
+references/SECURITY_CONTEXT.md
+registry-link
+warrant-core-link
+e2e/logs/
+.git/
