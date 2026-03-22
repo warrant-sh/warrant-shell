@@ -1,5 +1,7 @@
 target/
 RED_TEAM_*.md
+REDTEAM*.md
+CODE_REVIEW.md
 CROSS_REPO_FIXES.md
 R7_FIXES.md
 
