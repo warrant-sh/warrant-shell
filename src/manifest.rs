@@ -1154,7 +1154,8 @@ scope_defaults = { paths = ["/usr/bin/**", "/bin/**"] }
     #[test]
     fn registry_manifests_include_r8_network_deny_flags() {
         let parse = |text: &str| -> super::Manifest {
-            parse_manifest(text).unwrap_or_else(|err| panic!("failed to parse manifest fixture: {err}"))
+            parse_manifest(text)
+                .unwrap_or_else(|err| panic!("failed to parse manifest fixture: {err}"))
         };
 
         let curl = parse(
@@ -1328,7 +1329,8 @@ when_any_flags = ["--post-data", "--post-file", "--body-data", "--body-file"]
     #[test]
     fn registry_manifests_include_r16_policy_updates() {
         let parse = |text: &str| -> super::Manifest {
-            parse_manifest(text).unwrap_or_else(|err| panic!("failed to parse manifest fixture: {err}"))
+            parse_manifest(text)
+                .unwrap_or_else(|err| panic!("failed to parse manifest fixture: {err}"))
         };
 
         let python = parse(

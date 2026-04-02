@@ -414,9 +414,7 @@ pub fn render_draft(draft: &Draft, compact: bool) -> String {
             out.push('\n');
         }
 
-        if !compact
-            && let Some(meta) = draft.capability_meta.get(capability)
-        {
+        if !compact && let Some(meta) = draft.capability_meta.get(capability) {
             render_capability_comment(&mut out, meta);
         }
 

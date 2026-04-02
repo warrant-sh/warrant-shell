@@ -2,9 +2,9 @@ use std::fs;
 use std::path::Path;
 use std::process::Command;
 
+use crate::trusted_tools::trusted_curl_path;
 use chrono::{SecondsFormat, Utc};
 use serde_json::Value;
-use crate::trusted_tools::trusted_curl_path;
 
 pub const DEFAULT_DENYLIST_DIR: &str = "/var/lib/warrant-shell/denylists";
 

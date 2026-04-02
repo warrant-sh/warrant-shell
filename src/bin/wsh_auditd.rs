@@ -373,8 +373,8 @@ fn ensure_spool_dir_ready() -> io::Result<()> {
     let spool_dir = Path::new(SPOOL_DIR);
     fs::create_dir_all(spool_dir)?;
     if let Err(err) = fs::set_permissions(spool_dir, fs::Permissions::from_mode(0o1733)) {
-        let is_permission_like =
-            err.kind() == io::ErrorKind::PermissionDenied || err.raw_os_error() == Some(libc::EPERM);
+        let is_permission_like = err.kind() == io::ErrorKind::PermissionDenied
+            || err.raw_os_error() == Some(libc::EPERM);
         if !is_permission_like {
             return Err(err);
         }
@@ -849,8 +849,8 @@ fn copy_file_to_relay(source: &Path, destination: &Path) -> io::Result<()> {
 
 fn set_permissions_best_effort(path: &Path, mode: u32, label: &str) -> io::Result<()> {
     if let Err(err) = fs::set_permissions(path, fs::Permissions::from_mode(mode)) {
-        let is_permission_like =
-            err.kind() == io::ErrorKind::PermissionDenied || err.raw_os_error() == Some(libc::EPERM);
+        let is_permission_like = err.kind() == io::ErrorKind::PermissionDenied
+            || err.raw_os_error() == Some(libc::EPERM);
         if is_permission_like {
             eprintln!(
                 "wsh-auditd warning: failed to set {label} permissions on {}: {err}",
@@ -937,9 +937,7 @@ fn run() -> io::Result<()> {
     if let Some(parent) = socket_path.parent() {
         fs::create_dir_all(parent)?;
     }
-    if relay_enabled
-        && let Some(parent) = relay_socket_path.parent()
-    {
+    if relay_enabled && let Some(parent) = relay_socket_path.parent() {
         fs::create_dir_all(parent)?;
     }
     if let Some(parent) = pid_path.parent() {

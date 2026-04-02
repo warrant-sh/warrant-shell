@@ -621,7 +621,14 @@ fn build_compiled_lock_draft(
         files_table.insert(
             "write".to_string(),
             files_capability(
-                &[home_glob, tmp_glob, var_tmp_glob, "/usr/local/**", "/opt/**", "/dev/null"],
+                &[
+                    home_glob,
+                    tmp_glob,
+                    var_tmp_glob,
+                    "/usr/local/**",
+                    "/opt/**",
+                    "/dev/null",
+                ],
                 deny,
             ),
         );
@@ -1553,7 +1560,8 @@ fn uninstall_installation(root: Option<&Path>, force: bool) -> Result<()> {
 /// Falls back to `HOME` if not running via sudo.
 fn resolve_invoking_user_home() -> Option<PathBuf> {
     if let Ok(sudo_user) = std::env::var("SUDO_USER")
-        && !sudo_user.is_empty() && sudo_user != "root"
+        && !sudo_user.is_empty()
+        && sudo_user != "root"
     {
         return resolve_home_for_user(&sudo_user);
     }
@@ -1568,7 +1576,12 @@ fn resolve_home_for_user(username: &str) -> Option<PathBuf> {
     #[cfg(target_os = "macos")]
     {
         let output = Command::new("dscl")
-            .args([".", "-read", &format!("/Users/{username}"), "NFSHomeDirectory"])
+            .args([
+                ".",
+                "-read",
+                &format!("/Users/{username}"),
+                "NFSHomeDirectory",
+            ])
             .output()
             .ok()?;
         let text = String::from_utf8_lossy(&output.stdout);
@@ -1670,7 +1683,10 @@ fn clean_user_shell_artifacts(home: &Path) -> usize {
     }
 
     // Remove Claude hook file and settings entry.
-    let claude_hook = home.join(".claude").join("hooks").join("wsh_guard_pretool.py");
+    let claude_hook = home
+        .join(".claude")
+        .join("hooks")
+        .join("wsh_guard_pretool.py");
     if claude_hook.exists() {
         let _ = fs::remove_file(&claude_hook);
         println!("  removed {}", claude_hook.display());
@@ -1711,7 +1727,10 @@ fn remove_marker_block(text: &str, marker: &str) -> String {
     for line in lines {
         if line.trim() == marker {
             // Drop the preceding blank line if it exists.
-            if result_lines.last().is_some_and(|l: &&str| l.trim().is_empty()) {
+            if result_lines
+                .last()
+                .is_some_and(|l: &&str| l.trim().is_empty())
+            {
                 result_lines.pop();
             }
             skip_block = true;
@@ -1796,9 +1815,7 @@ fn clean_claude_settings_hook(home: &Path) -> usize {
             let after = pre_arr.len();
             // Clean up empty PreToolUse array.
             if pre_arr.is_empty() {
-                hooks
-                    .as_object_mut()
-                    .map(|obj| obj.remove("PreToolUse"));
+                hooks.as_object_mut().map(|obj| obj.remove("PreToolUse"));
             }
             before != after
         } else {
@@ -1808,9 +1825,7 @@ fn clean_claude_settings_hook(home: &Path) -> usize {
         false
     };
 
-    if modified
-        && let Ok(json) = serde_json::to_string_pretty(&settings)
-    {
+    if modified && let Ok(json) = serde_json::to_string_pretty(&settings) {
         let _ = fs::write(&settings_path, json + "\n");
         println!("  cleaned wsh hook from {}", settings_path.display());
         return 1;
@@ -1909,9 +1924,8 @@ fn update_installation(root: Option<&Path>, profile: Option<&str>, check_only: b
 
     // Download install script to a temp file
     let tmp_dir = std::env::temp_dir().join("warrant-shell-update");
-    fs::create_dir_all(&tmp_dir).map_err(|e| {
-        AppError::Message(format!("failed to create temp dir: {e}"))
-    })?;
+    fs::create_dir_all(&tmp_dir)
+        .map_err(|e| AppError::Message(format!("failed to create temp dir: {e}")))?;
     let script_path = tmp_dir.join("install.sh");
 
     println!("downloading install script from {install_url}...");
@@ -2903,8 +2917,7 @@ fn audit_command(
                     use std::os::unix::fs::MetadataExt;
                     if meta.uid() != current_uid() {
                         return Err(AppError::Message(
-                            "audit --clear requires root (use sudo wsh audit --clear)"
-                                .to_string(),
+                            "audit --clear requires root (use sudo wsh audit --clear)".to_string(),
                         ));
                     }
                 }
@@ -4192,7 +4205,8 @@ fn extract_option_values(
 
         let mut consumed = false;
         for option_name in &option.names {
-            if allow_separate && arg == option_name
+            if allow_separate
+                && arg == option_name
                 && let Some(next) = args.get(idx + 1)
                 && (!next.starts_with('-') || option.allow_hyphen_values)
             {
@@ -4595,10 +4609,7 @@ fn system_config_base_dir() -> Result<PathBuf> {
 }
 
 fn resolved_primary_program_for_exec(parsed: &mut ParsedCommand) -> Result<Option<String>> {
-    resolved_primary_program_for_exec_with_dirs(
-        parsed,
-        &trusted_program_dirs_for_commands(None),
-    )
+    resolved_primary_program_for_exec_with_dirs(parsed, &trusted_program_dirs_for_commands(None))
 }
 
 fn resolved_primary_program_for_exec_with_dirs(
@@ -4608,8 +4619,9 @@ fn resolved_primary_program_for_exec_with_dirs(
     if parsed.program.is_empty() || parsed.is_piped || parsed.is_chained {
         return Ok(None);
     }
-    let resolved = crate::policy::resolve_program_path_with_dirs(&parsed.program, trusted_program_dirs)
-        .map_err(|deny| AppError::Message(deny.reason))?;
+    let resolved =
+        crate::policy::resolve_program_path_with_dirs(&parsed.program, trusted_program_dirs)
+            .map_err(|deny| AppError::Message(deny.reason))?;
     let resolved = resolved.to_string_lossy().to_string();
     parsed.program = resolved.clone();
     Ok(Some(resolved))
@@ -4797,9 +4809,7 @@ command_default = "deny"
         )
     }
 
-    fn compiled_lock_text_for_capabilities(
-        capabilities: &BTreeMap<String, toml::Value>,
-    ) -> String {
+    fn compiled_lock_text_for_capabilities(capabilities: &BTreeMap<String, toml::Value>) -> String {
         let root = TempDir::new().expect("tempdir");
         let paths = resolve_paths(Some(root.path()), None).expect("resolve paths");
         build_compiled_lock_draft(
@@ -4831,7 +4841,10 @@ command_default = "deny"
         let warrant_text =
             std::fs::read_to_string(&paths.installed_warrant_path).expect("read warrant");
         let warrant = parse_toml_warrant(&warrant_text).expect("parse locked warrant");
-        let command = tokens.iter().map(|token| (*token).to_string()).collect::<Vec<_>>();
+        let command = tokens
+            .iter()
+            .map(|token| (*token).to_string())
+            .collect::<Vec<_>>();
         let parsed = parse_command(&command);
         match crate::policy::evaluate_command(
             &warrant,
@@ -5921,7 +5934,10 @@ scope_defaults = { paths = ["/usr/bin/**", "/bin/**"] }
             "status".to_string(),
         ])
         .parsed;
-        assert_eq!(command_match_tokens(&parsed, &["status".to_string()]), Some(3));
+        assert_eq!(
+            command_match_tokens(&parsed, &["status".to_string()]),
+            Some(3)
+        );
     }
 
     #[test]
@@ -6543,7 +6559,7 @@ value = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
             draft
                 .capabilities
                 .values()
-            .all(|capability| capability.decision == DraftDecision::Allow)
+                .all(|capability| capability.decision == DraftDecision::Allow)
         );
     }
 
@@ -6594,8 +6610,9 @@ value = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
             .expect("write existing draft");
         let before = std::fs::read_to_string(&original_path).expect("read existing draft before");
 
-        let returned_path = create_draft_for_manifest(&manifest, DraftScopeArg::System, false, true)
-            .expect("reuse existing draft path");
+        let returned_path =
+            create_draft_for_manifest(&manifest, DraftScopeArg::System, false, true)
+                .expect("reuse existing draft path");
         assert_eq!(returned_path, original_path);
 
         let after = std::fs::read_to_string(&original_path).expect("read existing draft after");

@@ -533,7 +533,10 @@ fn unsupported_redirection_feature(token: &str) -> Option<&'static str> {
 }
 
 fn is_supported_redirection_token(token: &str) -> bool {
-    if matches!(token, ">" | "1>" | ">>" | "1>>" | "2>" | "2>>" | "<" | ">|" | "1>|") {
+    if matches!(
+        token,
+        ">" | "1>" | ">>" | "1>>" | "2>" | "2>>" | "<" | ">|" | "1>|"
+    ) {
         return true;
     }
     for prefix in ["2>>", "1>>", ">>", "2>", "1>", ">|", ">", "<"] {
@@ -622,7 +625,10 @@ mod tests {
         assert_eq!(parsed.segments.len(), 1);
         assert_eq!(parsed.segments[0], vec!["echo"]);
         assert_eq!(parsed.substitutions.len(), 1);
-        assert_eq!(parsed.substitutions[0].segments, vec![vec!["whoami".to_string()]]);
+        assert_eq!(
+            parsed.substitutions[0].segments,
+            vec![vec!["whoami".to_string()]]
+        );
     }
 
     #[test]
@@ -636,7 +642,10 @@ mod tests {
         let parsed = parse_shell_command("echo \"hello $(whoami)\"").expect("parse");
         assert_eq!(parsed.segments.len(), 1);
         assert_eq!(parsed.substitutions.len(), 1);
-        assert_eq!(parsed.substitutions[0].segments, vec![vec!["whoami".to_string()]]);
+        assert_eq!(
+            parsed.substitutions[0].segments,
+            vec![vec!["whoami".to_string()]]
+        );
     }
 
     #[test]
@@ -676,7 +685,10 @@ mod tests {
     #[test]
     fn unterminated_command_substitution_errors() {
         let err = parse_shell_command("echo $(whoami").expect_err("must fail");
-        assert!(err.to_string().contains("unterminated command substitution"));
+        assert!(
+            err.to_string()
+                .contains("unterminated command substitution")
+        );
     }
 
     #[test]
@@ -795,8 +807,7 @@ mod tests {
 
     #[test]
     fn heredoc_with_and_chain() {
-        let parsed =
-            parse_shell_command("cat <<EOF && echo done\nhello\nEOF").expect("parse");
+        let parsed = parse_shell_command("cat <<EOF && echo done\nhello\nEOF").expect("parse");
         assert_eq!(parsed.segments.len(), 2);
         assert_eq!(parsed.segments[0], vec!["cat"]);
         assert_eq!(parsed.segments[1], vec!["echo", "done"]);
@@ -805,8 +816,7 @@ mod tests {
 
     #[test]
     fn heredoc_followed_by_command_on_next_line() {
-        let parsed =
-            parse_shell_command("cat <<EOF\nhello\nEOF\necho done").expect("parse");
+        let parsed = parse_shell_command("cat <<EOF\nhello\nEOF\necho done").expect("parse");
         assert_eq!(parsed.segments.len(), 2);
         assert_eq!(parsed.segments[0], vec!["cat"]);
         assert_eq!(parsed.segments[1], vec!["echo", "done"]);
@@ -815,8 +825,7 @@ mod tests {
 
     #[test]
     fn heredoc_multiline_body() {
-        let parsed =
-            parse_shell_command("cat <<EOF\nline 1\nline 2\nline 3\nEOF").expect("parse");
+        let parsed = parse_shell_command("cat <<EOF\nline 1\nline 2\nline 3\nEOF").expect("parse");
         assert_eq!(parsed.segments.len(), 1);
         assert_eq!(parsed.segments[0], vec!["cat"]);
     }
@@ -830,8 +839,7 @@ mod tests {
 
     #[test]
     fn heredoc_unterminated_errors() {
-        let err = parse_shell_command("cat <<EOF\nhello\nwhere is the end")
-            .expect_err("must fail");
+        let err = parse_shell_command("cat <<EOF\nhello\nwhere is the end").expect_err("must fail");
         assert!(err.to_string().contains("unterminated heredoc"));
     }
 
@@ -853,16 +861,12 @@ mod tests {
 
     #[test]
     fn git_commit_heredoc_substitution_pattern() {
-        let parsed = parse_shell_command(
-            "git commit -m \"$(cat <<'EOF'\ncommit message\nEOF\n)\"",
-        )
-        .expect("parse");
+        let parsed = parse_shell_command("git commit -m \"$(cat <<'EOF'\ncommit message\nEOF\n)\"")
+            .expect("parse");
         assert_eq!(parsed.segments[0][0], "git");
         assert_eq!(parsed.substitutions.len(), 1);
-        let names = extract_programs(
-            "git commit -m \"$(cat <<'EOF'\ncommit message\nEOF\n)\"",
-        )
-        .expect("parse");
+        let names = extract_programs("git commit -m \"$(cat <<'EOF'\ncommit message\nEOF\n)\"")
+            .expect("parse");
         assert_eq!(names, vec!["git", "cat"]);
     }
 

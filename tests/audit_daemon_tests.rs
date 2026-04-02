@@ -18,11 +18,11 @@ use ed25519_dalek::{Signature, SigningKey, Verifier};
 #[cfg(unix)]
 use hmac::{Hmac, Mac};
 use serde_json::Value;
-#[cfg(unix)]
-use warrant_core::current_host_binding;
 use serde_json::json;
 use sha2::{Digest, Sha256};
 use tempfile::TempDir;
+#[cfg(unix)]
+use warrant_core::current_host_binding;
 use wsh::audit::{AuditEntry, AuditSink, DaemonSink, Decision, verify_ledger};
 #[cfg(unix)]
 type HmacSha256 = Hmac<Sha256>;
@@ -390,7 +390,10 @@ fn daemon_elevation_check_reports_valid_and_expired_sessions() {
         .env("WSH_AUDITD_TCP_ADDR", "")
         .env("WSH_SESSION_DIR", &session_dir)
         .env("WSH_HOST_SECRET_PATH", &host_secret_path)
-        .env("WSH_SIGNING_PRIVATE_KEY", temp.path().join("signing/private.key"))
+        .env(
+            "WSH_SIGNING_PRIVATE_KEY",
+            temp.path().join("signing/private.key"),
+        )
         .spawn()
         .expect("start daemon");
     wait_for_socket(&socket_path).expect("socket ready");
@@ -431,7 +434,10 @@ fn daemon_writes_and_cleans_pid_file() {
         .env("WSH_AUDITD_LEDGER_DIR", &ledger_dir)
         .env("WSH_AUDITD_PID_FILE", &pid_path)
         .env("WSH_AUDITD_TCP_ADDR", "")
-        .env("WSH_SIGNING_PRIVATE_KEY", temp.path().join("signing/private.key"))
+        .env(
+            "WSH_SIGNING_PRIVATE_KEY",
+            temp.path().join("signing/private.key"),
+        )
         .spawn()
         .expect("start daemon");
 
@@ -497,7 +503,12 @@ fn daemon_lazy_loads_signing_key_after_lock() {
 
     let pid = child.id() as i32;
     let hup_rc = unsafe { libc::kill(pid, libc::SIGHUP) };
-    assert_eq!(hup_rc, 0, "failed to send SIGHUP: {}", io::Error::last_os_error());
+    assert_eq!(
+        hup_rc,
+        0,
+        "failed to send SIGHUP: {}",
+        io::Error::last_os_error()
+    );
     thread::sleep(Duration::from_millis(100));
 
     serde_json::to_writer(&mut stream, &json!({"type":"ping","nonce":"test-nonce-2"}))

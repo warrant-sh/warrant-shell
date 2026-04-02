@@ -206,9 +206,15 @@ fn scenario_14_bulk_delete_project_files_find_delete_edge() {
         .failure()
         .stderr(
             predicate::str::contains("find -delete cannot be statically verified")
-                .or(predicate::str::contains("outside capabilities.files.delete.paths"))
-                .or(predicate::str::contains("outside capabilities.files.write.paths"))
-                .or(predicate::str::contains("outside capabilities.files.read.paths"))
+                .or(predicate::str::contains(
+                    "outside capabilities.files.delete.paths",
+                ))
+                .or(predicate::str::contains(
+                    "outside capabilities.files.write.paths",
+                ))
+                .or(predicate::str::contains(
+                    "outside capabilities.files.read.paths",
+                ))
                 .or(predicate::str::contains("symlink component")),
         );
 }
